@@ -10,18 +10,15 @@
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
 uint8_t msg[] = "Queda livre detectada! \r\n";
-
 // Função para configurar o LIS3DH para detecção de queda livre
 void LIS3DH_FreeFallConfig(void) {
     LIS3DH_WriteReg(LIS3DH_CTRL_REG1, 0x97); // CTRL_REG1: Ativar XYZ, 50 Hz ODR
-    LIS3DH_WriteReg(LIS3DH_CTRL_REG3, 0x88); // CTRL_REG4: High resolution, BDU enabled, ±2g
-    LIS3DH_WriteReg(LIS3DH_CTRL_REG4, 0x40); // CTRL_REG3: AOI1 interrupt on INT1 pin
+    LIS3DH_WriteReg(LIS3DH_CTRL_REG4, 0x88); // CTRL_REG4: High resolution, BDU enabled, ±2g
+    LIS3DH_WriteReg(LIS3DH_CTRL_REG3, 0x40); // CTRL_REG3: AOI1 interrupt on INT1 pin
     LIS3DH_WriteReg(LIS3DH_INT1_CFG, 0x95); // INT1_CFG: 6 direction movement recognition
     LIS3DH_WriteReg(LIS3DH_INT1_THS, 0x16); // INT1_THS: Threshold = 350 mg
     LIS3DH_WriteReg(LIS3DH_INT1_DURATION, 0x03); // INT1_DURATION: Minimum event duration = 1/OD
 }
-
-
 // Função para verificar o status da interrupção de queda livre
 void freeFallStatus() {
     uint8_t int1Src;
@@ -34,12 +31,10 @@ void freeFallStatus() {
     	if ((int1Src & 0x01) && (int1Src & 0x04) && (int1Src & 0x10)) {
     		// Queda livre detectada: Todos os eixos estão abaixo do limiar configurado
     		HAL_UART_Transmit(&huart1, msg, (sizeof(msg)-1), 1000);	// Transmite mensagem serial pela UART
-             HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_6); //muda estado led
+            HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_6); //muda estado led
     	}
     }
 }
-
-
 // Leitura por SPI
 uint8_t LIS3DH_ReadReg(uint8_t address) {
     uint8_t txData[2];
@@ -61,7 +56,6 @@ uint8_t LIS3DH_ReadReg(uint8_t address) {
 
     return rxData[1]; // The second byte received is the actual data
 }
-
 // Escrita por SPI
 void LIS3DH_WriteReg(uint8_t address, uint8_t data) {
     uint8_t txData[2];
